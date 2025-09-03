@@ -9,11 +9,12 @@ def analyze_http(pcap_file):
 
     print(f"Analyzing HTTP traffic in {pcap_file}...")
 
-    # The tshark command to filter for HTTP and extract specific fields
+    # The tshark command to filter for HTTP and extract specific fields, now including time
     tshark_command = [
         'tshark', '-r', pcap_file,
         '-Y', 'http',
         '-T', 'fields',
+        '-e', 'frame.time',
         '-e', 'ip.src',
         '-e', 'ip.dst',
         '-e', 'http.host',
@@ -33,8 +34,9 @@ def analyze_http(pcap_file):
         print("--- HTTP Analysis Results ---")
         for line in http_requests:
             fields = line.split('\t')
-            if len(fields) == 5:
-                src_ip, dst_ip, host, uri, user_agent = fields
+            if len(fields) == 6:  # Updated to 6 fields
+                timestamp, src_ip, dst_ip, host, uri, user_agent = fields
+                print(f"Time: {timestamp}")
                 print(f"Source IP: {src_ip} -> Destination IP: {dst_ip}")
                 print(f"Host: {host}")
                 print(f"URI: {uri}")
